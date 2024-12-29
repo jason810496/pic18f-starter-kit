@@ -27,7 +27,7 @@ void SystemInitialize(void){
         .button = INTERRUPT_HIGH,
         .adc = INTERRUPT_HIGH,
         .timer = INTERRUPT_HIGH,
-        .uart_tx = INTERRUPT_LOW,
+        .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
     };
 

@@ -25,6 +25,9 @@ void RxEnableInterrupt(IntPriority priority){
 }
 
 void UartInitialize(IntPriority tx_priority, IntPriority rx_priority){
+    if( tx_priority == INTERRUPT_NONE || rx_priority == INTERRUPT_NONE ){
+        return;
+    }
     TRISCbits.RC6 = 1;
     TRISCbits.RC7 = 1;
 

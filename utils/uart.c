@@ -16,7 +16,7 @@ void SetBaudRate(void){
 
 void TxEnableInterrupt(IntPriority priority){
     IPR1bits.TXIP = priority;
-    PIE1bits.TXIE = 1;
+    PIE1bits.TXIE = 0;
 }
 
 void RxEnableInterrupt(IntPriority priority){

@@ -76,5 +76,6 @@ void UartReceiveChar(void){
 }
 
 char UartGetChar(void){
+    if(uart_buffer_idx == 0) return '\0';
     return uart_buffer[uart_buffer_idx - 1];
 }

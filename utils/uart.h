@@ -20,6 +20,8 @@
 #elif UART_BAUD_RATE == 115200
     #define SPBRG_VALUE 0
 #endif
+#else
+#define SPBRG_VALUE 0
 #endif
 
 #define UART_BUFFER_SIZE 128

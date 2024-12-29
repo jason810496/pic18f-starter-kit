@@ -61,7 +61,8 @@
 #include "interrupt_manager.h"
 #include "ccp.h"
 #include "uart.h"
-void ComponentInitialize(SystemComponents components, IntConfig *int_config) {
+#include "timer.h"
+void ComponentInitialize(SystemComponents components, IntConfig *int_config, ComponentConfig component_config) {
     if(int_config) InterruptInitialize();
     // Oscillator should always be initialized first if selected
     if (components & COMPONENT_LED){
@@ -75,11 +76,15 @@ void ComponentInitialize(SystemComponents components, IntConfig *int_config) {
         }
     }
     if (components & COMPONENT_PWM){
-        PWMInitialize();
+        PWMInitialize(component_config.pwm_period_ms);
     }
     if (components & COMPONENT_ADC) {
         if(int_config) AdcInitialize(int_config->adc);
         else AdcInitialize(INTERRUPT_NONE);
+    }
+    if (components & COMPONENT_TIMER) {
+        if(int_config) Timer2Initialize(int_config->timer, component_config.prescaler, component_config.postscaler, component_config.timer_period_ms);
+        else Timer2Initialize(INTERRUPT_NONE, component_config.prescaler, component_config.postscaler, component_config.timer_period_ms);
     }
     if (components & COMPONENT_UART) {
         if(int_config) UartInitialize(int_config->uart_tx, int_config->uart_rx);

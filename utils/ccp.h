@@ -5,7 +5,7 @@
 #define CCP_IF PIR1bits.CCP1IF
 #define PWM_MOTOR_STRIDE 15
 
-void PWMInitialize();
+void PWMInitialize(double period_ms);
 void PWMSetPeriod(double period_ms);
 void PWMSetDutyCycle(double duty_cycle_us);
 double PWMGetDutyCycle();

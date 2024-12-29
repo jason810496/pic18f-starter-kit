@@ -4,10 +4,15 @@
 
 double PWMDutyCycle = 0;
 
-void PWMInitialize(){
+void PWMInitialize(double period_ms){
     TRISCbits.TRISC2 = 0;
     CCP1CONbits.CCP1M = 0b1100;
-    Timer2Initialize();
+    if(_XTAL_FREQ <= 1000000){
+        Timer2Initialize(INTERRUPT_NONE, 4, 16, 0);
+    } else {
+        Timer2Initialize(INTERRUPT_NONE, 16, 16, 0);
+    }
+    PWMSetPeriod(period_ms);
 }
 
 void PWMSetPeriod(double period_ms){
@@ -17,7 +22,7 @@ void PWMSetPeriod(double period_ms){
      * = (PR2 + 1) * 4 * Tosc * (TMR2 prescaler)
      */
     int prescaler = Timer2GetPrescaler();
-    PR2 = (period_ms * _XTAL_FREQ / 1000) / (4 * prescaler) - 1;
+    PR2 = (period_ms * (_XTAL_FREQ / 1000)) / (4 * prescaler) - 1;
 }
 
 void PWMSetDutyCycle(double duty_cycle_us){

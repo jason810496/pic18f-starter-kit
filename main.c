@@ -13,7 +13,7 @@
 #include "utils/ccp.h"
 #include "utils/uart.h"
 #include "utils/config.h"
-
+#include "utils/timer.h"
 #define MOTOR_PERIOD_MS 20
 #define MOTOR_POS_90_DEG_US 2400
 #define MOTOR_0_DEG_US 1450
@@ -26,15 +26,20 @@ void SystemInitialize(void){
     IntConfig int_config = {
         .button = INTERRUPT_HIGH,
         .adc = INTERRUPT_HIGH,
-        .timer = INTERRUPT_HIGH,
+        .timer = INTERRUPT_NONE,
         .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
     };
+    ComponentConfig component_config = {
+        .prescaler = 16,
+        .postscaler = 16,
+        .timer_period_ms = 1000,
+        .pwm_period_ms = MOTOR_PERIOD_MS,
+    };
 
     OscillatorInitialize();
-    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_ADC | COMPONENT_UART,
-                        &int_config);
-    PWMSetPeriod(MOTOR_PERIOD_MS);
+    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_PWM,
+                        &int_config, component_config);
     PWMSetDutyCycle(MOTOR_NEG_90_DEG_US);
 }
 
@@ -66,6 +71,10 @@ void __interrupt(high_priority) HighIsr(void){
 
         AdcIntDone();
         AdcStartConversion();
+    }
+    if(Timer2IF){
+        LedSet(LedValue() + 1);
+        Timer2IntDone();
     }
 }
 

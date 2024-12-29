@@ -4,13 +4,9 @@
 #include "settings.h"
 #include "config.h"
 
-#if _XTAL_FREQ <= 1000000
-#define TIMER2_PRESCALER 4
-#else
-#define TIMER2_PRESCALER 16
-#endif
+#define Timer2IF (PIR1bits.TMR2IF && PIE1bits.TMR2IE)
+#define Timer2IntDone() PIR1bits.TMR2IF = 0
 
-void Timer2Initialize();
-void Timer2EnableInterrupt(IntPriority priority);
+void Timer2Initialize(IntPriority priority, int prescaler, int postscaler, double period_ms);
 
 #endif

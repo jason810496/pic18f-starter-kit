@@ -42,6 +42,13 @@ typedef struct {
     IntPriority uart_rx;
 } IntConfig;
 
+typedef struct {
+    int prescaler;
+    int postscaler;
+    int timer_period_ms;
+    int pwm_period_ms;
+} ComponentConfig;
+
 // Define an enumeration for frequency selection
 typedef enum {
     FREQ_31KHZ,
@@ -61,7 +68,8 @@ typedef enum {
     COMPONENT_ADC         = 0x04,
     COMPONENT_PWM         = 0x08,
     COMPONENT_UART        = 0x10,
-    COMPONENT_ALL         = 0x1F
+    COMPONENT_TIMER       = 0x20,
+    COMPONENT_ALL         = 0x3F
 } SystemComponents;
 
 typedef enum {
@@ -74,6 +82,6 @@ typedef enum {
     UART_BAUD_115200
 } UartBaudRate;
 
-void ComponentInitialize(SystemComponents components, IntConfig *int_config);
+void ComponentInitialize(SystemComponents components, IntConfig *int_config, ComponentConfig component_config);
 void OscillatorInitialize();
 #endif

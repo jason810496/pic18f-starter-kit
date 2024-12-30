@@ -24,8 +24,8 @@
 #endif
 
 typedef enum {
-    LEFT_JUSTIFIED,
-    RIGHT_JUSTIFIED
+    ADC_LEFT_JUSTIFIED_RANGE_0_255,
+    ADC_RIGHT_JUSTIFIED_RANGE_0_1023,
 } AdcJustify;
 
 typedef enum {
@@ -40,6 +40,7 @@ typedef struct {
     IntPriority timer;
     IntPriority uart_tx;
     IntPriority uart_rx;
+    AdcJustify adc_justify;
 } IntConfig;
 
 typedef struct {

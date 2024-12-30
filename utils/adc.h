@@ -26,7 +26,10 @@
 #define AdcStartConversion() ADCON0bits.GO = 1
 #define AdcIntDone() PIR1bits.ADIF = 0
 
+extern AdcJustify adc_justify_setting;
+
 void AdcInitialize(IntPriority int_priority);
 void AdcEnableInterrupt(IntPriority);
+int AdcGetResult(void);
 
 #endif

@@ -21,9 +21,6 @@
 #define MOTOR_0_DEG_US 1450
 #define MOTOR_NEG_90_DEG_US 500
 
-int flag = 0;
-int prev_adc_val = 0;
-
 void SystemInitialize(void){
     IntConfig int_config = {
         .button = INTERRUPT_HIGH,
@@ -31,6 +28,7 @@ void SystemInitialize(void){
         .timer = INTERRUPT_NONE,
         .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
+        .adc_justify = ADC_LEFT_JUSTIFIED_RANGE_0_255,
     };
     ComponentConfig component_config = {
         .prescaler = 16,
@@ -64,7 +62,7 @@ void __interrupt(high_priority) HighIsr(void){
         ButtonIntDone();
     }
     if(ADC_IF){
-        int val = AdcGetResultHigh();
+        int val = AdcGetResult();
         if(abs(val - prev_adc_val) > 10){
             LedSet(LedValue() + 1);
             prev_adc_val = val;

@@ -17,7 +17,12 @@
     BASE_CONTEXT_MANAGER(BUTTON_IF,ButtonIntDone,code_block)
 
 #define WITH_ADC_CXT(code_block) \
-    BASE_CONTEXT_MANAGER(ADC_IF,AdcIntDone,code_block)
+    if(ADC_IF){ \
+        code_block \
+        AdcIntDone(); \
+        AdcStartConversion(); \
+        return; \
+    }
 
 #define WITH_TIMER2_CXT(code_block) \
     BASE_CONTEXT_MANAGER(Timer2IF,Timer2IntDone,code_block)

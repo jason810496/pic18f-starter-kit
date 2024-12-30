@@ -78,6 +78,10 @@ void UartReceiveChar(void){
     UartSendChar(c);
 }
 
+void UartIntDone(void){
+    RCIF = 0;
+}
+
 char UartGetChar(void){
     if(uart_buffer_idx == 0) return '\0';
     return uart_buffer[uart_buffer_idx - 1];

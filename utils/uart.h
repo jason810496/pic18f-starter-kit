@@ -31,6 +31,7 @@ void UartClearBuffer(void);
 void UartSendChar(char c);
 void UartSendString(char *str);
 void UartReceiveChar(void);
+void UartIntDone(void);
 char UartGetChar(void);
 
 #endif

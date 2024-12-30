@@ -14,6 +14,8 @@
 #include "utils/uart.h"
 #include "utils/config.h"
 #include "utils/timer.h"
+#include "utils/context_manager.h"
+
 #define MOTOR_PERIOD_MS 20
 #define MOTOR_POS_90_DEG_US 2400
 #define MOTOR_0_DEG_US 1450

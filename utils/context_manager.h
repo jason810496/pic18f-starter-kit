@@ -1,10 +1,11 @@
 #ifndef CONTEXT_MANAGER_H
 #define CONTEXT_MANAGER_H
 
-#include "utils/interrupt_manager.h"
-#include "utils/adc.h"
-#include "utils/timer.h"
-#include "utils/uart.h"
+#include "adc.h"
+#include "timer.h"
+#include "uart.h"
+#include "interrupt_manager.h"
+
 
 #define BASE_CONTEXT_MANAGER(trigger_flag,callback,code_block) \
     if(trigger_flag){ \

@@ -4,8 +4,9 @@
 
 AdcJustify adc_justify_setting;
 
-void AdcInitialize(IntPriority int_priority){
-    adc_justify_setting = int_priority.adc_justify;
+void AdcInitialize(IntPriority int_priority,AdcJustify adc_just){
+    if( int_priority == INTERRUPT_NONE ) return;
+    adc_justify_setting = adc_just;
 
     TRISAbits.RA0 = 1; // AN0 as input
 
@@ -13,7 +14,7 @@ void AdcInitialize(IntPriority int_priority){
     ADCON1bits.VCFG1 = 0;
     ADCON1bits.PCFG = 0b1110; // AN0 as analog input, rest as digital
 
-    ADCON2bits.ADFM = int_priority.adc_justify == ADC_LEFT_JUSTIFIED_RANGE_0_255 ? LEFT_JUSTIFIED : RIGHT_JUSTIFIED;
+    ADCON2bits.ADFM = adc_just;
 
     ADCON2bits.ADCS = ADCS_VALUE;
     ADCON2bits.ACQT = 0b010;  // 4Tad >= 4us
@@ -37,16 +38,16 @@ void AdcEnableInterrupt(IntPriority priority){
 int AdcGetResult(void){
     /*return adc result corresponding to justification setting*/
     int result = 0;
-    if(adc_justify_setting == LEFT_JUSTIFIED_RANGE_0_255){
+    if(adc_justify_setting == ADC_LEFT_JUSTIFIED_RANGE_0_255){
         result = AdcGetResultHigh();
     }else{
-        result = (AdcGetResultHigh() << 2) + AdcGetResultLow();
+        result = (AdcGetResultHigh() << 8) + AdcGetResultLow();
     }
     return result;
 }
 
 int AdcGetMaxResult(void){
-    if(adc_justify_setting == LEFT_JUSTIFIED_RANGE_0_255){
+    if(adc_justify_setting == ADC_LEFT_JUSTIFIED_RANGE_0_255){
         return 255;
     }else{
         return 1023;

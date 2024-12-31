@@ -79,8 +79,8 @@ void ComponentInitialize(SystemComponents components, IntConfig *int_config, Com
         PWMInitialize(component_config.pwm_period_ms);
     }
     if (components & COMPONENT_ADC) {
-        if(int_config) AdcInitialize(int_config->adc);
-        else AdcInitialize(INTERRUPT_NONE);
+        if(int_config) AdcInitialize(int_config->adc,int_config->adc_justify);
+        else AdcInitialize(INTERRUPT_NONE,ADC_LEFT_JUSTIFIED_RANGE_0_255);
     }
     if (components & COMPONENT_TIMER) {
         if(int_config) Timer2Initialize(int_config->timer, component_config.prescaler, component_config.postscaler, component_config.timer_period_ms);

@@ -1,10 +1,11 @@
 /*
- * File:   main.c
- * Author: simon
- *
- * Created on December 23, 2024, 5:09 PM
- */
-
+- variable resistor + 1 LED
+- 3 states
+    - turn variable resistor to change state from left to right
+    - 1. LED frequency is 1s
+    - 2. LED frequency is 0.5s
+    - 3. LED frequency is 0.25s
+*/
 #include <xc.h>
 #include "utils/settings.h"
 #include "utils/led.h"
@@ -28,7 +29,7 @@ void SystemInitialize(void){
         .timer = INTERRUPT_NONE,
         .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
-        .adc_justify = ADC_LEFT_JUSTIFIED_RANGE_0_255,
+        .adc_justify = ADC_RIGHT_JUSTIFIED_RANGE_0_1023,
     };
     ComponentConfig component_config = {
         .prescaler = 16,
@@ -38,48 +39,56 @@ void SystemInitialize(void){
     };
 
     OscillatorInitialize();
-    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_PWM,
+    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_ADC,
                         &int_config, component_config);
-    PWMSetDutyCycle(MOTOR_NEG_90_DEG_US);
+//    PWMSetDutyCycle(MOTOR_NEG_90_DEG_US);
 }
 
 void main(void) {
     SystemInitialize();
-    while(1);
+    while(1){
+        LedSet(1);
+        switch(my_flag_1){
+            case 1000:
+                __delay_ms(40);
+                break;
+            case 500:
+                __delay_ms(10);
+                break;
+            case 250:
+                __delay_ms(1);
+                break;
+        }
+        LedSet(0);
+        switch(my_flag_1){
+            case 1000:
+                __delay_ms(40);
+                break;
+            case 500:
+                __delay_ms(10);
+                break;
+            case 250:
+                __delay_ms(1);
+                break;
+        }
+    }
     return;
 }
 
-void __interrupt(high_priority) HighIsr(void){
-    if(BUTTON_IF){
-        LedSet(LedValue() + 1);
-        if(flag == 0){
-            PWMSetDutyCycle(MOTOR_POS_90_DEG_US);
-            flag = 1;
-        }else{
-            PWMSetDutyCycle(MOTOR_NEG_90_DEG_US);
-            flag = 0;
-        }
-        ButtonIntDone();
-    }
-    if(ADC_IF){
+HIGH_PRIORITY_INTERRUPT(
+    WITH_ADC_CXT(
         int val = AdcGetResult();
-        if(abs(val - prev_adc_val) > 10){
-            LedSet(LedValue() + 1);
-            prev_adc_val = val;
-            __delay_ms(500);
+        val = val / (AdcGetMaxResult() / 3);
+        switch(val){
+            case 0:
+                my_flag_1 = 1000;
+                break;
+            case 1:
+                my_flag_1 = 500;
+                break;
+            case 2:
+                my_flag_1 = 250;
+                break;
         }
-
-        AdcIntDone();
-        AdcStartConversion();
-    }
-    if(Timer2IF){
-        LedSet(LedValue() + 1);
-        Timer2IntDone();
-    }
-}
-
-void __interrupt(low_priority) LowIsr(void){
-    if(RCIF){
-        UartReceiveChar();
-    }
-}
+    )
+)

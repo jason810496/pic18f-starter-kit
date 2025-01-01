@@ -1,11 +1,3 @@
-/*
-- variable resistor + 1 LED
-- 3 states
-    - turn variable resistor to change state from left to right
-    - 1. LED frequency is 1s
-    - 2. LED frequency is 0.5s
-    - 3. LED frequency is 0.25s
-*/
 #include <xc.h>
 #include "utils/settings.h"
 #include "utils/led.h"
@@ -29,6 +21,7 @@ void SystemInitialize(void){
         .timer = INTERRUPT_NONE,
         .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
+        .adc_justify = ADC_RIGHT_JUSTIFIED_RANGE_0_1023,
     };
     ComponentConfig component_config = {
         .prescaler = 16,
@@ -38,18 +31,15 @@ void SystemInitialize(void){
     };
 
     OscillatorInitialize();
-    ComponentInitialize(COMPONENT_LED | COMPONENT_ADC,
+    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_ADC | COMPONENT_PWM,
                         &int_config, component_config);
 }
 
 void main(void) {
     SystemInitialize();
-    double delay_duration = 1;
     while(1){
-        LedSet(1);
-        delay_duration = (double)my_flag_1 / (double)100;
-        delay_if_not_changed(delay_duration, &my_flag_1);
-        LedSet(0);
+        MotorRotate(my_flag_1);
+        delay(0.1);
     }
     return;
 }
@@ -57,17 +47,7 @@ void main(void) {
 HIGH_PRIORITY_INTERRUPT(
     WITH_ADC_CXT(
         int val = AdcGetResultHigh();
-        int current_state = val / ( AdcGetMaxResult() / 3);
-        switch(current_state){
-            case 0:
-                my_flag_1 = 100;
-                break;
-            case 1:
-                my_flag_1 = 50;
-                break;
-            case 2:
-                my_flag_1 = 25;
-                break;
-        }
+        int current_state = val / ( AdcGetMaxResult() / 90);
+        my_flag_1 = current_state;
     )
 )

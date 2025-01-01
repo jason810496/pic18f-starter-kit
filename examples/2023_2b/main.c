@@ -67,7 +67,6 @@ fork from @erichung9060
 #define _XTAL_FREQ 4000000
 #define STR_MAX 100
 #define VR_MAX ((1 << 10) - 1)
-// #define delay(t) __delay_ms(t * 1000);
 
 // ---------------- Uart --------------------
 
@@ -86,6 +85,7 @@ void UART_Write_Text(char *text)  // Output on Terminal
     for (i = 0; text[i] != '\0'; i++)
         UART_Write(text[i]);
 }
+
 
 void ClearBuffer() {
     for (int i = 0; i < STR_MAX; i++)
@@ -277,6 +277,8 @@ void __interrupt(high_priority) H_ISR(){
     }
 }
 
+// ---------------- Additional Functions after Fork --------------------
+
 void delay(double seconds){
     int ms = (int)(seconds * 1000);
     int chunks = ms / 50;
@@ -297,9 +299,7 @@ void delay_if_not_changed(double seconds,int *watch_ptr){
 
 // --------------- TODO ------------------
 
-int cur_delay = 0;
-int counters[3] = {0, 0, 0};
-char buffer[STR_MAX];
+int cur_target_angle = 90;
 
 void button_pressed(){
     // Do sth when the button is pressed
@@ -317,25 +317,6 @@ void variable_register_changed(int value){ // value: 0 ~ 1023
      * set_LED_analog(VR_value_to_LED_analog(value));
      */
     
-    int section = value / ( VR_MAX / 3 );
-    switch (section) {
-        case 0:
-            cur_delay = 100;
-            sprintf(buffer, "state_1 count = %d\n", counters[0]);
-            break;
-        case 1:
-            cur_delay = 50;
-            sprintf(buffer, "state_2 count = %d\n", counters[1]);
-            break;
-        case 2:
-            cur_delay = 25;
-            sprintf(buffer, "state_3 count = %d\n", counters[2]);
-            break;
-        default:
-            break;
-    }
-    
-    UART_Write_Text(buffer);
     
 }
 
@@ -349,8 +330,21 @@ void keyboard_input(char *str){ // str: the words you type on the keyboard
         }
     }
      */
+
+    // set_LED(1);
+
+    if( strcmp(str,"mode1\r") == 0){
+        // set_LED_separately(1,1,0);
+        cur_target_angle = 90;
+        ClearBuffer();
+    }else if( strcmp(str,"mode2\r") == 0){
+        // set_LED_separately(1,1,1);
+        cur_target_angle = 45;
+        ClearBuffer();
+    }
     
-    
+    // delay(0.5);
+    // set_LED(0);
 }
 
 void main(){
@@ -375,20 +369,11 @@ void main(){
     
     char str[STR_MAX];
     
-    double delay_sec;
     while(1) {
         // Do sth in main
-        delay_sec = (double)cur_delay / 100.0;
         
-        set_LED(0);
-        delay(delay_sec/2.0);
-        set_LED(1);
-        delay(delay_sec/2.0);
-
-        if( cur_delay == 100 ) counters[0]++;
-        else if( cur_delay == 50 ) counters[1]++;
-        else if( cur_delay == 25 ) counters[2]++;
-        
+        set_servo_angle(-cur_target_angle);
+        set_servo_angle(cur_target_angle);
         
         strcpy(str, GetString());
         if(strlen(str)) keyboard_input(str);

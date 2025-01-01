@@ -79,6 +79,14 @@ void UART_Write(unsigned char data)  // Output on Terminal
     TXREG = data;             // write to TXREG will send data
 }
 
+void UART_Write_Text(char *text)  // Output on Terminal
+{
+    int i;
+    for (i = 0; text[i] != '\0'; i++)
+        UART_Write(text[i]);
+}
+
+
 void ClearBuffer() {
     for (int i = 0; i < STR_MAX; i++)
         mystring[i] = '\0';
@@ -290,8 +298,10 @@ void delay_if_not_changed(double seconds,int *watch_ptr){
 }
 
 // --------------- TODO ------------------
-int nxt_deg = 0;
 
+int x = 100;
+int vr_val = 0;
+char buffer[100];
 void button_pressed(){
     // Do sth when the button is pressed
     /* Example: 
@@ -308,7 +318,9 @@ void variable_register_changed(int value){ // value: 0 ~ 1023
      * set_LED_analog(VR_value_to_LED_analog(value));
      */
     
-    nxt_deg = value / (VR_MAX / 90 );
+    vr_val = value;
+    sprintf(buffer, "div = (int)%d (float)%f\n\r", vr_val/ x , (float)vr_val / (float)x);
+    UART_Write_Text(buffer);
 }
 
 void keyboard_input(char *str){ // str: the words you type on the keyboard
@@ -321,8 +333,15 @@ void keyboard_input(char *str){ // str: the words you type on the keyboard
         }
     }
      */
+    int str_len = strlen(str);
+    if( str[ str_len - 1 ] == '\r' ){
+        str[ str_len - 1 ] = '\0';
+        x = atoi(str);
+        ClearBuffer();
+    }
     
-    
+    sprintf(buffer, "div = (int)%d (float)%f\n\r", vr_val/ x , (float)vr_val / (float)x);
+    UART_Write_Text(buffer);
 }
 
 void main(){
@@ -349,7 +368,7 @@ void main(){
     
     while(1) {
         // Do sth in main
-        set_servo_angle( nxt_deg );
+        
         
         
         strcpy(str, GetString());

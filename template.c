@@ -79,6 +79,14 @@ void UART_Write(unsigned char data)  // Output on Terminal
     TXREG = data;             // write to TXREG will send data
 }
 
+void UART_Write_Text(char *text)  // Output on Terminal
+{
+    int i;
+    for (i = 0; text[i] != '\0'; i++)
+        UART_Write(text[i]);
+}
+
+
 void ClearBuffer() {
     for (int i = 0; i < STR_MAX; i++)
         mystring[i] = '\0';

@@ -31,5 +31,6 @@ extern AdcJustify adc_justify_setting;
 void AdcInitialize(IntPriority int_priority,AdcJustify adc_just);
 void AdcEnableInterrupt(IntPriority);
 int AdcGetResult(void);
+int AdcGetMaxResult(void);
 
 #endif

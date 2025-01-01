@@ -8,5 +8,6 @@
 #define Timer2IntDone() PIR1bits.TMR2IF = 0
 
 void Timer2Initialize(IntPriority priority, int prescaler, int postscaler, double period_ms);
+int Timer2GetPrescaler(void);
 
 #endif

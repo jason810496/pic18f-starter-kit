@@ -29,6 +29,7 @@ void SystemInitialize(void){
         .timer = INTERRUPT_NONE,
         .uart_tx = INTERRUPT_NONE,
         .uart_rx = INTERRUPT_LOW,
+        .adc_justify = ADC_RIGHT_JUSTIFIED_RANGE_0_1023,
     };
     ComponentConfig component_config = {
         .prescaler = 16,
@@ -38,31 +39,30 @@ void SystemInitialize(void){
     };
 
     OscillatorInitialize();
-    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_PWM,
+    ComponentInitialize(COMPONENT_LED | COMPONENT_BUTTON | COMPONENT_ADC | COMPONENT_PWM,
                         &int_config, component_config);
-    PWMSetDutyCycle(MOTOR_NEG_90_DEG_US);
 }
 
 void main(void) {
     SystemInitialize();
     while(1){
-        if(current_state == 0){
-            MotorRotateWithDelay(MOTOR_NEG_90_DEG_US/2);
-            __delay_ms(50);
-            MotorRotateWithDelay(MOTOR_POS_90_DEG_US/2);
+        if(my_flag_1 == 0){
+            MotorRotate(MOTOR_NEG_90_DEG_US/2);
+            delay(0.5);
+            MotorRotate(MOTOR_POS_90_DEG_US/2);
         
         }else{
-            MotorRotateWithDelay(MOTOR_NEG_90_DEG_US);
-            __delay_ms(50);
-            MotorRotateWithDelay(MOTOR_POS_90_DEG_US);
+            MotorRotate(MOTOR_NEG_90_DEG_US);
+            delay(0.5);
+            MotorRotate(MOTOR_POS_90_DEG_US);
         }
-        __delay_ms(current_delay);
+        __delay_ms(0.1);
     }
     return;
 }
 
 HIGH_PRIORITY_INTERRUPT(
     WITH_BUTTON_CXT(
-        current_delay = !current_delay;
+        my_flag_1 = !my_flag_1;
     )
 )

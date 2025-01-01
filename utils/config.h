@@ -6,5 +6,8 @@
 
 extern int my_flag_1;
 extern int my_flag_2;
+extern int my_flag_3;
+extern int my_flag_4;
+extern int my_flag_5;
 
 #endif

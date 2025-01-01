@@ -41,3 +41,12 @@ void delay_if_not_changed(double period_seconds,int *watch_ptr){
         __delay_ms(10);
     }
 }
+
+void delay(double period_seconds){
+    int period_ms = period_seconds * 1000;
+    // 10ms as a chunk
+    int chunks = period_ms / 10;
+    for(int i = 0; i < chunks; i++){
+        __delay_ms(10);
+    }
+}

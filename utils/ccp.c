@@ -3,6 +3,7 @@
 #include "config.h"
 
 double PWMDutyCycle = 0;
+int motor_current_angle = 0;
 
 void PWMInitialize(double period_ms){
     TRISCbits.TRISC2 = 0;
@@ -43,18 +44,17 @@ double PWMGetDutyCycle(){
     return PWMDutyCycle;
 }
 
-void MotorRotateWithDelay(double target_duty_cycle){
-    while(PWMDutyCycle != target_duty_cycle){
-        double next_duty_cycle;
-        if(PWMDutyCycle < target_duty_cycle){
-            next_duty_cycle = PWMDutyCycle + PWM_MOTOR_STRIDE;
-            if(next_duty_cycle > target_duty_cycle) next_duty_cycle = target_duty_cycle;
-            PWMSetDutyCycle(next_duty_cycle);
-        } else if(PWMDutyCycle > target_duty_cycle){
-            next_duty_cycle = PWMDutyCycle - PWM_MOTOR_STRIDE;
-            if(next_duty_cycle < target_duty_cycle) next_duty_cycle = target_duty_cycle;
-            PWMSetDutyCycle(next_duty_cycle);
-        }
-        __delay_ms(2);
+void MotorRotate(int angle){
+    int current = (CCPR1L << 2) + CCP1CONbits.DC1B;
+    int target = (int)((500 + (double)(angle + 90) / 180 * (2400 - 500)) / 8 / 4) * 8; // angle to pwn
+    
+    while(current != target){
+        if(current < target) current++;
+        else current--;
+        
+        CCPR1L = (current >> 2);
+        CCP1CONbits.DC1B = (current & 0b11);
+        __delay_ms(1);
     }
+    motor_current_angle = angle;
 }

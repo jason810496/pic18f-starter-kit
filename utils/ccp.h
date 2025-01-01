@@ -9,5 +9,7 @@ void PWMInitialize(double period_ms);
 void PWMSetPeriod(double period_ms);
 void PWMSetDutyCycle(double duty_cycle_us);
 double PWMGetDutyCycle();
-void MotorRotateWithDelay(double target_duty_cycle);
+void MotorRotate(int angle);
+
+extern int motor_current_angle;
 #endif

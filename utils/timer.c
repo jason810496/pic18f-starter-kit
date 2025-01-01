@@ -27,3 +27,17 @@ void Timer2Initialize(IntPriority priority, int prescaler, int postscaler, doubl
 int Timer2GetPrescaler(void){
     return Timer2Prescaler;
 }
+
+
+void delay_if_not_changed(double period_seconds,int *watch_ptr){
+    int period_ms = period_seconds * 1000;
+    int original_value = *watch_ptr;
+    // 10ms as a chunk
+    int chunks = period_ms / 10;
+    for(int i = 0; i < chunks; i++){
+        if(*watch_ptr != original_value){
+            return;
+        }
+        __delay_ms(10);
+    }
+}

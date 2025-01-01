@@ -1,3 +1,8 @@
+/*
+
+fork from @erichung9060
+
+*/
 // CONFIG1H
 #pragma config OSC = INTIO67  // Oscillator Selection bits (HS oscillator)
 #pragma config FCMEN = OFF    // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
@@ -62,7 +67,6 @@
 #define _XTAL_FREQ 4000000
 #define STR_MAX 100
 #define VR_MAX ((1 << 10) - 1)
-#define delay(t) __delay_ms(t * 1000);
 
 // ---------------- Uart --------------------
 
@@ -265,15 +269,34 @@ void __interrupt(high_priority) H_ISR(){
     }
 }
 
+// ---------------- Additional Functions after Fork --------------------
+
+void delay(double seconds){
+    int ms = (int)(seconds * 1000);
+    int chunks = ms / 50;
+    for (int i = 0; i < chunks; i++) {
+        __delay_ms(50);
+    }
+}
+
+void delay_if_not_changed(double seconds,int *watch_ptr){
+    int original_value = *watch_ptr;
+    int ms = (int)(seconds * 1000);
+    int chunks = ms / 50;
+    for (int i = 0; i < chunks; i++) {
+        if(*watch_ptr != original_value) return;
+        __delay_ms(50);
+    }
+}
+
 // --------------- TODO ------------------
 
-int cur_state = 0;
 void button_pressed(){
     // Do sth when the button is pressed
     /* Example: 
      * set_LED(get_LED() + 1);
      */
-    cur_state = !cur_state;
+    
     
 }
 
@@ -283,7 +306,8 @@ void variable_register_changed(int value){ // value: 0 ~ 1023
      * set_servo_angle(VR_value_to_servo_angle(value));
      * set_LED_analog(VR_value_to_LED_analog(value));
      */
-
+    
+    
 }
 
 void keyboard_input(char *str){ // str: the words you type on the keyboard
@@ -325,13 +349,6 @@ void main(){
     while(1) {
         // Do sth in main
         
-        if( cur_state == 0 ){
-            set_servo_angle(-90);
-            set_servo_angle(90);
-        }else{
-            set_servo_angle(-45);
-            set_servo_angle(45);
-        }
         
         
         strcpy(str, GetString());

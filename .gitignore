@@ -3,5 +3,6 @@
 !README.md
 !.gitignore
 !main.c
+!template.c
 !utils
 !examples
